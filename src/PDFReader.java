@@ -1,129 +1,64 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class PDFReader {
-
-    private static final int MAX_TEXT_LENGTH = 500; // Tamanho máximo de cada parte do texto
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Substitua pelo caminho do seu arquivo PDF
-            String filePath = "E:/PROGRAMAÇÃO JAVA FULL STACK/certificação java/certificacaojava11.pdf";
+            // Caminho do PDF original
+            String filePath = "E:/PROGRAMAÇÃO JAVA FULL STACK/AulaIngles/English Conversation - Intermediate English (2).pdf";
 
-            // Pergunta ao usuário qual método de extração deseja usar
-            System.out.println("Escolha o método de extração:");
-            System.out.println("1. Extrair um número fixo de páginas");
-            System.out.println("2. Extrair um intervalo de páginas");
-            int escolha = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer do scanner
+            // Pergunta a página que deseja extrair
+            System.out.println("Digite o número da página que deseja extrair:");
+            int pagina = scanner.nextInt();
+            scanner.nextLine(); // limpar buffer
 
-            String textoPdf = "";
+            // Extrair texto da página escolhida
+            String textoPagina = extrairTextoPagina(filePath, pagina);
 
-            switch (escolha) {
-                case 1:
-                    // Pergunta o número de páginas a serem extraídas
-                    System.out.println("Digite o número de páginas para extrair:");
-                    int numPaginas = scanner.nextInt();
-                    scanner.nextLine(); // Limpar o buffer do scanner
-                    textoPdf = extrairTextoPrimeirasPaginas(filePath, numPaginas);
-                    break;
+            // Enviar para ChatGPT pedindo resolução
+            String prompt = "Resolva as atividades desta página de inglês e explique tudo em português:\n" + textoPagina;
+            String respostaGPT = chatGpt(prompt);
 
-                case 2:
-                    // Pergunta o intervalo de páginas
-                    System.out.println("Digite a página inicial:");
-                    int paginaInicial = scanner.nextInt();
-                    System.out.println("Digite a página final:");
-                    int paginaFinal = scanner.nextInt();
-                    scanner.nextLine(); // Limpar o buffer do scanner
-                    textoPdf = extrairTextoIntervaloPaginas(filePath, paginaInicial, paginaFinal);
-                    break;
+            // Criar PDF com a resolução
+            String arquivoResolvido = "E:/PROGRAMAÇÃO JAVA FULL STACK/AulaIngles/Atividade_Resolvida_Pagina_" + pagina + ".pdf";
+            criarPDF(respostaGPT, arquivoResolvido);
 
-                default:
-                    System.out.println("Escolha inválida.");
-                    return;
-            }
-
-            // Dividir o texto em partes menores
-            List<String> partesTexto = dividirTexto(textoPdf, MAX_TEXT_LENGTH);
-
-            // Inicializa a resposta
-            StringBuilder respostaCompleta = new StringBuilder();
-
-            // Enviar cada parte para o ChatGPT e receber as respostas
-            for (String parte : partesTexto) {
-                String respostaParte = chatGpt(parte);
-                respostaCompleta.append(respostaParte).append("\n"); // Adiciona cada resposta à resposta completa
-            }
-
-            System.out.println("Resposta do GPT:");
-            System.out.println(respostaCompleta.toString());
-
-            // Obter o número de páginas do PDF
-            int numeroPaginas = contarPaginasPDF(filePath);
-            System.out.println("Número de páginas do PDF: " + numeroPaginas);
+            System.out.println("Atividade resolvida gerada em: " + arquivoResolvido);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String extrairTextoPrimeirasPaginas(String filePath, int numPaginas) throws IOException {
+    // Extrai texto de uma página específica
+    public static String extrairTextoPagina(String filePath, int pagina) throws IOException {
         PDDocument document = PDDocument.load(new File(filePath));
         PDFTextStripper stripper = new PDFTextStripper();
-        stripper.setStartPage(1);
-        stripper.setEndPage(numPaginas);
+        stripper.setStartPage(pagina);
+        stripper.setEndPage(pagina);
         String texto = stripper.getText(document);
         document.close();
         return texto;
     }
 
-    public static String extrairTextoIntervaloPaginas(String filePath, int paginaInicial, int paginaFinal) throws IOException {
-        PDDocument document = PDDocument.load(new File(filePath));
-        PDFTextStripper stripper = new PDFTextStripper();
-        stripper.setStartPage(paginaInicial);
-        stripper.setEndPage(paginaFinal);
-        String texto = stripper.getText(document);
-        document.close();
-        return texto;
-    }
-
-    public static int contarPaginasPDF(String filePath) throws IOException {
-        PDDocument document = PDDocument.load(new File(filePath));
-        int numeroPaginas = document.getNumberOfPages();
-        document.close();
-        return numeroPaginas;
-    }
-
-    public static List<String> dividirTexto(String texto, int maxLength) {
-        List<String> partes = new ArrayList<>();
-        int length = texto.length();
-        for (int i = 0; i < length; i += maxLength) {
-            partes.add(texto.substring(i, Math.min(length, i + maxLength)));
-        }
-        return partes;
-    }
-
+    // Envia texto para ChatGPT
     public static String chatGpt(String message) {
         String url = "https://api.openai.com/v1/chat/completions";
         String apiKey = System.getenv("OPENAI_API_KEY");
-        
         String model = "gpt-4-turbo";
         String response = "";
 
@@ -140,7 +75,7 @@ public class PDFReader {
             JsonArray messagesArray = new JsonArray();
             JsonObject messageJson = new JsonObject();
             messageJson.addProperty("role", "user");
-            messageJson.addProperty("content", message + " em português e quero tudo explicado");
+            messageJson.addProperty("content", message);
             messagesArray.add(messageJson);
 
             requestJson.add("messages", messagesArray);
@@ -150,9 +85,6 @@ public class PDFReader {
             writer.write(requestJson.toString());
             writer.flush();
             writer.close();
-
-            int responseCode = con.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             StringBuilder responseData = new StringBuilder();
@@ -177,5 +109,30 @@ public class PDFReader {
         }
 
         return response;
+    }
+
+    // Cria PDF com o conteúdo resolvido
+    public static void criarPDF(String texto, String caminhoArquivo) throws IOException {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
+
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStream.beginText();
+        contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 12);
+        contentStream.setLeading(14f);
+        contentStream.newLineAtOffset(50, 750);
+
+        String[] linhas = texto.split("\n");
+        for (String linha : linhas) {
+            contentStream.showText(linha);
+            contentStream.newLine();
+        }
+
+        contentStream.endText();
+        contentStream.close();
+
+        document.save(caminhoArquivo);
+        document.close();
     }
 }
