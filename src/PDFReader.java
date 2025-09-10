@@ -30,7 +30,7 @@ public class PDFReader {
             String textoPagina = extrairTextoPagina(filePath, pagina);
 
             // Enviar para ChatGPT pedindo resolução
-            String prompt = "Resolva as atividades desta página de inglês e explique tudo em português:\n" + textoPagina;
+            String prompt = "Resolva TODAS as atividades desta página de inglês e explique tudo em PORTUGUÊS de forma completa:\n" + textoPagina;
             String respostaGPT = chatGpt(prompt);
 
             // Criar PDF com a resolução
@@ -111,7 +111,7 @@ public class PDFReader {
         return response;
     }
 
-    // Cria PDF com o conteúdo resolvido
+    // Cria PDF com o conteúdo resolvido, quebrando linhas e adicionando páginas se necessário
     public static void criarPDF(String texto, String caminhoArquivo) throws IOException {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage(PDRectangle.A4);
@@ -120,13 +120,39 @@ public class PDFReader {
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
         contentStream.beginText();
         contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 12);
-        contentStream.setLeading(14f);
+        contentStream.setLeading(14f); // espaço entre linhas
         contentStream.newLineAtOffset(50, 750);
+
+        float maxY = 50; // margem inferior
+        float startY = 750;
 
         String[] linhas = texto.split("\n");
         for (String linha : linhas) {
+            // Quebrar linhas longas
+            while (linha.length() > 95) { // ajusta largura da página
+                String subLinha = linha.substring(0, 95);
+                contentStream.showText(subLinha);
+                contentStream.newLine();
+                linha = linha.substring(95);
+                startY -= 14;
+            }
+
+            if (startY <= maxY) { // ultrapassou margem inferior -> nova página
+                contentStream.endText();
+                contentStream.close();
+                page = new PDPage(PDRectangle.A4);
+                document.addPage(page);
+                contentStream = new PDPageContentStream(document, page);
+                contentStream.beginText();
+                contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 12);
+                contentStream.setLeading(14f);
+                contentStream.newLineAtOffset(50, 750);
+                startY = 750;
+            }
+
             contentStream.showText(linha);
             contentStream.newLine();
+            startY -= 14;
         }
 
         contentStream.endText();
