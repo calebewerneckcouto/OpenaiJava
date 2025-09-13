@@ -10,56 +10,118 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
+import java.util.*;
 
-public class PDFReader {
+public class PDFReaderChunks {
+
+    // Lista para armazenar os chunks
+    private static List<Chunk> chunks = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            // Caminho do PDF original
             String filePath = "E:/PROGRAMAÇÃO JAVA FULL STACK/AulaIngles/English Conversation - Intermediate English (2).pdf";
 
-            // Pergunta a página que deseja extrair
-            System.out.println("Digite o número da página que deseja extrair:");
-            int pagina = scanner.nextInt();
-            scanner.nextLine(); // limpar buffer
+            System.out.println("🔄 Extraindo conteúdo do PDF e criando chunks...");
+            criarChunksPDF(filePath, 5); 
 
-            // Extrair texto da página escolhida
-            String textoPagina = extrairTextoPagina(filePath, pagina);
+            System.out.println("✅ Chunks prontos para consulta rápida!");
 
-            // Enviar para ChatGPT pedindo resolução
-            String prompt = "Resolva TODAS as atividades desta página de inglês e explique tudo em PORTUGUÊS de forma completa:\n" + textoPagina;
-            String respostaGPT = chatGpt(prompt);
+            // Loop de perguntas
+            while (true) {
+                System.out.print("\nDigite sua pergunta sobre o PDF (ou 'sair' para encerrar): ");
+                String pergunta = scanner.nextLine();
 
-            // Criar PDF com a resolução
-            String arquivoResolvido = "E:/PROGRAMAÇÃO JAVA FULL STACK/AulaIngles/Atividade_Resolvida_Pagina_" + pagina + ".pdf";
-            criarPDF(respostaGPT, arquivoResolvido);
+                if (pergunta.equalsIgnoreCase("sair")) {
+                    System.out.println("Encerrando...");
+                    break;
+                }
 
-            System.out.println("Atividade resolvida gerada em: " + arquivoResolvido);
+                // Seleciona chunks relevantes usando busca simples por palavra-chave
+                List<Chunk> chunksRelevantes = buscarChunks(pergunta);
+
+                // Monta o prompt apenas com os chunks relevantes
+                StringBuilder promptBuilder = new StringBuilder();
+                promptBuilder.append("Aqui estão os trechos relevantes do PDF:\n");
+                for (Chunk c : chunksRelevantes) {
+                    promptBuilder.append("Páginas ").append(c.paginaInicio).append("-").append(c.paginaFim)
+                            .append(":\n").append(c.texto).append("\n\n");
+                }
+                promptBuilder.append("Com base nesses trechos, responda à pergunta em português:\n").append(pergunta);
+
+                String respostaGPT = chatGpt(promptBuilder.toString());
+                System.out.println("\n=== RESPOSTA DA IA ===");
+                System.out.println(respostaGPT);
+
+                // Opcional: salvar resposta em PDF
+                String arquivoResolvido = "E:/PROGRAMAÇÃO JAVA FULL STACK/AulaIngles/Resposta_" + pergunta.hashCode() + ".pdf";
+                criarPDF(respostaGPT, arquivoResolvido);
+                System.out.println("📄 Resposta salva em: " + arquivoResolvido);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            // Fecha o scanner para liberar o recurso
+            scanner.close();
         }
     }
 
-    // Extrai texto de uma página específica
-    public static String extrairTextoPagina(String filePath, int pagina) throws IOException {
-        PDDocument document = PDDocument.load(new File(filePath));
-        PDFTextStripper stripper = new PDFTextStripper();
-        stripper.setStartPage(pagina);
-        stripper.setEndPage(pagina);
-        String texto = stripper.getText(document);
-        document.close();
-        return texto;
+    // Classe para armazenar chunks
+    static class Chunk {
+        int paginaInicio;
+        int paginaFim;
+        String texto;
     }
 
-    // Envia texto para ChatGPT
+    // Cria chunks do PDF
+    public static void criarChunksPDF(String filePath, int paginasPorChunk) throws IOException {
+        PDDocument document = PDDocument.load(new File(filePath));
+        PDFTextStripper stripper = new PDFTextStripper();
+        int totalPaginas = document.getNumberOfPages();
+
+        for (int i = 1; i <= totalPaginas; i += paginasPorChunk) {
+            stripper.setStartPage(i);
+            stripper.setEndPage(Math.min(i + paginasPorChunk - 1, totalPaginas));
+            String textoChunk = stripper.getText(document);
+
+            Chunk chunk = new Chunk();
+            chunk.paginaInicio = i;
+            chunk.paginaFim = Math.min(i + paginasPorChunk - 1, totalPaginas);
+            chunk.texto = textoChunk;
+            chunks.add(chunk);
+        }
+        document.close();
+    }
+
+    // Busca chunks relevantes (palavras-chave simples)
+    public static List<Chunk> buscarChunks(String pergunta) {
+        List<Chunk> relevantes = new ArrayList<>();
+        String[] palavras = pergunta.toLowerCase().split("\\s+");
+
+        for (Chunk c : chunks) {
+            String textoLower = c.texto.toLowerCase();
+            for (String p : palavras) {
+                if (textoLower.contains(p)) {
+                    relevantes.add(c);
+                    break;
+                }
+            }
+        }
+
+        // Se nada for encontrado, retorna todos para não perder informação
+        if (relevantes.isEmpty()) {
+            return chunks;
+        }
+        return relevantes;
+    }
+
+    // Chamar ChatGPT
     public static String chatGpt(String message) {
         String url = "https://api.openai.com/v1/chat/completions";
         String apiKey = System.getenv("OPENAI_API_KEY");
-        String model = "gpt-4-turbo";
+        String model = "gpt-4o-mini"; // mais rápido e barato
         String response = "";
 
         try {
@@ -81,10 +143,10 @@ public class PDFReader {
             requestJson.add("messages", messagesArray);
 
             con.setDoOutput(true);
-            OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-            writer.write(requestJson.toString());
-            writer.flush();
-            writer.close();
+            try (OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream())) {
+                writer.write(requestJson.toString());
+                writer.flush();
+            }
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             StringBuilder responseData = new StringBuilder();
@@ -100,7 +162,7 @@ public class PDFReader {
                 JsonObject choice = choicesArray.get(0).getAsJsonObject();
                 JsonObject messageObject = choice.getAsJsonObject("message");
                 if (messageObject != null && messageObject.has("content")) {
-                    response = messageObject.get("content").getAsString();
+                    response = messageObject.get("content").getAsString().trim();
                 }
             }
 
@@ -111,7 +173,7 @@ public class PDFReader {
         return response;
     }
 
-    // Cria PDF com o conteúdo resolvido, quebrando linhas e adicionando páginas se necessário
+    // Criar PDF com resposta
     public static void criarPDF(String texto, String caminhoArquivo) throws IOException {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage(PDRectangle.A4);
@@ -120,16 +182,15 @@ public class PDFReader {
         PDPageContentStream contentStream = new PDPageContentStream(document, page);
         contentStream.beginText();
         contentStream.setFont(org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA, 12);
-        contentStream.setLeading(14f); // espaço entre linhas
+        contentStream.setLeading(14f);
         contentStream.newLineAtOffset(50, 750);
 
-        float maxY = 50; // margem inferior
+        float maxY = 50;
         float startY = 750;
 
         String[] linhas = texto.split("\n");
         for (String linha : linhas) {
-            // Quebrar linhas longas
-            while (linha.length() > 95) { // ajusta largura da página
+            while (linha.length() > 95) {
                 String subLinha = linha.substring(0, 95);
                 contentStream.showText(subLinha);
                 contentStream.newLine();
@@ -137,7 +198,7 @@ public class PDFReader {
                 startY -= 14;
             }
 
-            if (startY <= maxY) { // ultrapassou margem inferior -> nova página
+            if (startY <= maxY) {
                 contentStream.endText();
                 contentStream.close();
                 page = new PDPage(PDRectangle.A4);
@@ -160,5 +221,6 @@ public class PDFReader {
 
         document.save(caminhoArquivo);
         document.close();
+       
     }
 }
