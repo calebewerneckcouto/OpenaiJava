@@ -1,0 +1,139 @@
+00:00:00:00 - 00:00:02:05
+Você já teve esse pesadelo?
+
+00:00:02:05 - 00:00:07:03
+Seus balanços desabam, o filamento fica
+fora de controle e sua impressão se transforma em espaguete.
+
+00:00:08:03 - 00:00:09:27
+Que chato.
+
+00:00:09:27 - 00:00:12:23
+Mas não se preocupe, podemos consertar.
+
+00:00:12:23 - 00:00:15:27
+Tudo isso pode ser evitado
+com configurações de suporte.
+
+00:00:16:21 - 00:00:20:00
+Hoje vamos mergulhar em como configurar
+suportes que são estáveis,
+
+00:00:20:12 - 00:00:23:03
+fáceis de remover, e economizam filamento.
+
+00:00:23:03 - 00:00:25:19
+Primeiro, um pequeno diagnóstico para o seu modelo.
+
+00:00:25:19 - 00:00:28:02
+Seu modelo realmente precisa de suportes?
+
+00:00:28:02 - 00:00:30:01
+Existem duas maneiras de descobrir isso.
+
+00:00:30:01 - 00:00:33:18
+Insira seu modelo no
+Creality print 6.1 e clique em visualizar.
+
+00:00:34:10 - 00:00:38:07
+Se você ver um pequeno ícone de aviso flutuante
+no canto inferior esquerdo. Sim.
+
+00:00:38:23 - 00:00:42:15
+Agora isso significa que algumas áreas
+estão penduradas no ar e precisam de suporte.
+
+00:00:43:02 - 00:00:45:19
+Você também pode verificar em mostrar na impressora
+
+00:00:45:19 - 00:00:48:15
+e olhar a porcentagem de balanço saliente.
+
+00:00:48:15 - 00:00:52:03
+Quando você vê um
+balanço saliente, é hora de ter cuidado.
+
+00:00:52:11 - 00:00:53:08
+Significa que existem
+
+00:00:53:08 - 00:00:57:23
+muitos balanços salientes sem suporte
+e você definitivamente vai querer adicionar suporte.
+
+00:00:57:27 - 00:01:00:12
+Vá para a aba de suporte à esquerda.
+
+00:01:00:12 - 00:01:03:11
+Ative o suporte e pronto!
+
+00:01:03:11 - 00:01:05:25
+O software
+gera automaticamente o suporte para você.
+
+00:01:05:25 - 00:01:09:01
+Como escolher tipos de suporte e métodos
+de colocação.
+
+00:01:09:05 - 00:01:14:06
+Primeiro, tipos de suporte para balanços grandes
+e planos como pontes e plataformas.
+
+00:01:14:07 - 00:01:16:23
+Nós escolhemos suportes normais.
+
+00:01:16:23 - 00:01:20:02
+É estável,
+é suave e é extremamente rápido.
+
+00:01:20:15 - 00:01:24:11
+E para partes pequenas ou complicadas
+como dedos ou detalhes minúsculos.
+
+00:01:24:24 - 00:01:27:08
+Nossa configuração preferida é suportes de árvore.
+
+00:01:27:08 - 00:01:30:23
+Sempre mais fácil de remover
+e economiza mais filamento.
+
+00:01:31:00 - 00:01:33:10
+Agora é hora de escolher o método de colocação.
+
+00:01:33:10 - 00:01:36:09
+Você pode simplesmente escolher suporte automático
+e pronto.
+
+00:01:36:09 - 00:01:38:24
+Tudo será feito automaticamente aqui.
+
+00:01:38:24 - 00:01:41:03
+Super útil se você está apenas começando.
+
+00:01:41:03 - 00:01:46:08
+Mas para fabricantes experientes que conhecem bem seu modelo
+também há suportes manuais
+
+00:01:46:08 - 00:01:49:15
+para você
+onde você pode usar a ferramenta de pincel
+
+00:01:49:24 - 00:01:52:24
+para adicionar suporte apenas onde você deseja.
+
+00:01:52:27 - 00:01:58:00
+Super útil na seleção
+e evitando áreas nas configurações de suporte.
+
+00:01:58:05 - 00:02:00:20
+Mais nem sempre significa melhor.
+
+00:02:00:20 - 00:02:03:27
+Use onde realmente ajuda
+e está tudo feito.
+
+00:02:04:11 - 00:02:05:11
+Quer mais?
+
+00:02:05:11 - 00:02:08:00
+Inscreva-se
+para mais dicas úteis da Creality.

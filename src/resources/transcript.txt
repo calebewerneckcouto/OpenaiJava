@@ -1,0 +1,140 @@
+00:00:00:00 - 00:00:02:05
+Have you ever had this nightmare?
+
+00:00:02:05 - 00:00:07:03
+Your overhangs collapse, filament goes
+wild and your print turns into spaghetti.
+
+00:00:08:03 - 00:00:09:27
+What a bummer.
+
+00:00:09:27 - 00:00:12:23
+But don't worry, we can fix it.
+
+00:00:12:23 - 00:00:15:27
+All of this can be avoided
+with support settings.
+
+00:00:16:21 - 00:00:20:00
+Today we're diving into how to set up
+supports that are stable,
+
+00:00:20:12 - 00:00:23:03
+easy to remove, and filament saving.
+
+00:00:23:03 - 00:00:25:19
+First, a little diagnosis for your model.
+
+00:00:25:19 - 00:00:28:02
+Does your model even need supports?
+
+00:00:28:02 - 00:00:30:01
+There's two ways to figure this out.
+
+00:00:30:01 - 00:00:33:18
+Drop your model into Creality
+print 6.1 and hit preview.
+
+00:00:34:10 - 00:00:38:07
+If you see a little floating warning
+icon in the bottom left corner. Yep.
+
+00:00:38:23 - 00:00:42:15
+Now that means some areas
+are hanging in the air and need support.
+
+00:00:43:02 - 00:00:45:19
+You can also check show in printer
+
+00:00:45:19 - 00:00:48:15
+and look at the overhang wall percentage.
+
+00:00:48:15 - 00:00:52:03
+Once you see an overhang
+wall, it's a time to be careful.
+
+00:00:52:11 - 00:00:53:08
+It means there are
+
+00:00:53:08 - 00:00:57:23
+lots of unsupported overhangs
+and you'll definitely want to add support.
+
+00:00:57:27 - 00:01:00:12
+Go to the support tab on the left.
+
+00:01:00:12 - 00:01:03:11
+Toggle on enable support and boom!
+
+00:01:03:11 - 00:01:05:25
+The software
+auto generate support for you.
+
+00:01:05:25 - 00:01:09:01
+How to choose support types and placement
+methods.
+
+00:01:09:05 - 00:01:14:06
+First, support types for large and flat
+overhangs like bridges and platforms.
+
+00:01:14:07 - 00:01:16:23
+We go with normal supports.
+
+00:01:16:23 - 00:01:20:02
+It's steady,
+it's smooth, and it's lightning fast.
+
+00:01:20:15 - 00:01:24:11
+And for small or tricky parts
+like fingers or tiny details.
+
+00:01:24:24 - 00:01:27:08
+Our go to setting is tree supports.
+
+00:01:27:08 - 00:01:30:23
+Always easier to remove
+and more filament saving.
+
+00:01:31:00 - 00:01:33:10
+Now time to pick the placement method.
+
+00:01:33:10 - 00:01:36:09
+You can just go with automatic support
+and here you go.
+
+00:01:36:09 - 00:01:38:24
+Everything will be auto done here.
+
+00:01:38:24 - 00:01:41:03
+Super helpful if you're just starting out.
+
+00:01:41:03 - 00:01:46:08
+But for veteran makers who know your model
+well, there's also manual supports
+
+00:01:46:08 - 00:01:49:15
+for you
+where you can use the paintbrush tool
+
+00:01:49:24 - 00:01:52:24
+to add support only where you want.
+
+00:01:52:27 - 00:01:58:00
+Super handy in selecting
+and avoiding areas in support settings.
+
+00:01:58:05 - 00:02:00:20
+More doesn't always mean better.
+
+00:02:00:20 - 00:02:03:27
+Use it where it actually help
+and it's all done.
+
+00:02:04:11 - 00:02:05:11
+Want more?
+
+00:02:05:11 - 00:02:08:00
+Subscribe
+for more handy tips from Creality.
+
